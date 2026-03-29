@@ -22,6 +22,7 @@ ResearchHub is a client-side personal paper management web app for organizing, t
 
 - Implemented the **Add Paper** section so the sidebar route now opens a dedicated page with quick actions for each add workflow.
 - Added support for opening the Add Paper modal directly to a selected tab.
+- Added global search weighting modes: **Balanced**, **Title Focus**, and **Full Text**.
 
 ## Run locally
 

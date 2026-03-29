@@ -15,10 +15,13 @@ window.ResearchHub = window.ResearchHub || {};
     _pdfState: { pdf: null, page: 1, scale: 1.0 },
     _notesCleanup: null,
     _parsedBibtex: null,
+    _searchMode: 'balanced',
 
     async init() {
       const Settings = window.ResearchHub.Settings;
       const darkMode = await Settings.get('darkMode', false);
+      const savedSearchMode = await Settings.get('searchMode', 'balanced');
+      this._searchMode = ['balanced', 'title', 'full'].includes(savedSearchMode) ? savedSearchMode : 'balanced';
       if (darkMode) {
         document.documentElement.setAttribute('data-theme', 'dark');
         const btn = document.getElementById('dark-mode-toggle');
@@ -28,6 +31,7 @@ window.ResearchHub = window.ResearchHub || {};
       await this.loadData();
       this.setupNav();
       this.setupSearch();
+      window.ResearchHub.Search.setMode(this._searchMode);
       this.setupKeyboardShortcuts();
       this.setupGlobalEventListeners();
       await this.showSection('dashboard');
@@ -207,8 +211,6 @@ window.ResearchHub = window.ResearchHub || {};
       // Apply search
       const searchInput = document.getElementById('global-search');
       if (searchInput && searchInput.value.length >= 2) {
-        const searchMode = document.getElementById('search-mode');
-        window.ResearchHub.Search.setMode(searchMode ? searchMode.value : 'balanced');
         const results = window.ResearchHub.Search.search(searchInput.value);
         if (results !== null) papers = results;
       }
@@ -1457,6 +1459,7 @@ window.ResearchHub = window.ResearchHub || {};
       const searchInput = document.getElementById('global-search');
       if (!searchInput) return;
       const searchMode = document.getElementById('search-mode');
+      if (searchMode) searchMode.value = this._searchMode;
       const Utils = window.ResearchHub.Utils;
       const debouncedSearch = Utils.debounce(() => {
         this.currentPage = 1;
@@ -1469,10 +1472,19 @@ window.ResearchHub = window.ResearchHub || {};
       searchInput.addEventListener('input', debouncedSearch);
       if (searchMode) {
         searchMode.addEventListener('change', () => {
-          window.ResearchHub.Search.setMode(searchMode.value);
+          const nextMode = searchMode.value || 'balanced';
+          if (nextMode === this._searchMode) return;
+          this._searchMode = nextMode;
+          window.ResearchHub.Search.setMode(nextMode);
+          window.ResearchHub.Settings.set('searchMode', nextMode);
           if (searchInput.value.length >= 2) debouncedSearch();
         });
       }
+    },
+
+    getSearchMode() {
+      const searchMode = document.getElementById('search-mode');
+      return searchMode ? searchMode.value : 'balanced';
     },
 
     setupKeyboardShortcuts() {
