@@ -180,7 +180,13 @@ window.ResearchHub = window.ResearchHub || {};
         : null;
       const venue = (item['container-title'] && item['container-title'][0]) || '';
       let abstract = item.abstract || '';
-      abstract = abstract.replace(/<[^>]+>/g, '').trim();
+      // Strip HTML tags safely: remove all tags iteratively until none remain
+      let prev = '';
+      while (prev !== abstract) {
+        prev = abstract;
+        abstract = abstract.replace(/<[^>]*>/g, '');
+      }
+      abstract = abstract.trim();
 
       const paper = await Papers.add({
         title,

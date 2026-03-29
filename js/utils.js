@@ -128,10 +128,15 @@ window.ResearchHub = window.ResearchHub || {};
 
     sanitizeHTML(str) {
       if (!str) return '';
-      return str
-        .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-        .replace(/\s+on\w+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]*)/gi, '')
-        .replace(/javascript\s*:/gi, '');
+      // Remove script tags (handle variations like </script >, </SCRIPT>, etc.)
+      let result = str.replace(/<\s*script[\s\S]*?<\s*\/\s*script\s*>/gi, '');
+      // Remove remaining <script...> tags without a closing tag
+      result = result.replace(/<\s*script\b[^>]*>/gi, '');
+      // Remove event handler attributes (onclick, onmouseover, etc.)
+      result = result.replace(/\s+on[a-zA-Z]+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]*)/gi, '');
+      // Remove javascript: URIs
+      result = result.replace(/javascript\s*:/gi, '');
+      return result;
     },
 
     truncate(str, len) {

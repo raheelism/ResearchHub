@@ -39,7 +39,7 @@ window.ResearchHub = window.ResearchHub || {};
 
     markdown(papers) {
       const Utils = window.ResearchHub.Utils;
-      const escape = s => (s || '').replace(/\|/g, '\\|').replace(/\n/g, ' ');
+      const escape = s => (s || '').replace(/\\/g, '\\\\').replace(/\|/g, '\\|').replace(/\n/g, ' ');
       let md = '# Research Papers\n\n';
       md += '| Title | Authors | Year | Venue | Status |\n';
       md += '|-------|---------|------|-------|--------|\n';
