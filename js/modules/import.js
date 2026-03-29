@@ -185,7 +185,10 @@ window.ResearchHub = window.ResearchHub || {};
         const doc = (new DOMParser()).parseFromString(abstract, 'text/html');
         abstract = doc.body.textContent || '';
       } catch(e) {
-        abstract = abstract.replace(/<[^>]*>/g, '');
+        // Fallback: use Utils DOM-based sanitizer, then extract text
+        const tmp = document.createElement('div');
+        tmp.textContent = abstract;
+        abstract = tmp.textContent;
       }
       abstract = abstract.trim();
 
