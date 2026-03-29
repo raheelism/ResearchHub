@@ -134,6 +134,19 @@ window.ResearchHub = window.ResearchHub || {};
           formStatus.appendChild(opt);
         });
       }
+
+      const bulkStatus = document.getElementById('bulk-status');
+      if (bulkStatus) {
+        const val = bulkStatus.value;
+        bulkStatus.innerHTML = '<option value="">Bulk status…</option>';
+        statuses.forEach(s => {
+          const opt = document.createElement('option');
+          opt.value = s;
+          opt.textContent = s;
+          if (s === val) opt.selected = true;
+          bulkStatus.appendChild(opt);
+        });
+      }
     },
 
     setupNav() {
@@ -404,6 +417,47 @@ window.ResearchHub = window.ResearchHub || {};
         exportCsv.parentNode.replaceChild(newBtn, exportCsv);
         newBtn.addEventListener('click', () => {
           window.ResearchHub.Export.csv(this.filteredPapers.length > 0 ? this.filteredPapers : this.allPapers);
+        });
+      }
+
+      const bulkStatusBtn = document.getElementById('bulk-status-apply-btn');
+      if (bulkStatusBtn) {
+        const newBtn = bulkStatusBtn.cloneNode(true);
+        bulkStatusBtn.parentNode.replaceChild(newBtn, bulkStatusBtn);
+        newBtn.addEventListener('click', async () => {
+          const bulkStatus = document.getElementById('bulk-status');
+          const targetStatus = bulkStatus ? bulkStatus.value : '';
+          if (!targetStatus) {
+            window.ResearchHub.Utils.showToast('Select a bulk status first', 'warning');
+            return;
+          }
+
+          const selectedIds = Array.from(document.querySelectorAll('#papers-tbody .paper-checkbox:checked'))
+            .map(cb => cb.value);
+          if (selectedIds.length === 0) {
+            window.ResearchHub.Utils.showToast('Select at least one paper', 'warning');
+            return;
+          }
+
+          const results = await Promise.allSettled(
+            selectedIds.map(id => window.ResearchHub.Papers.update(id, { status: targetStatus }))
+          );
+          const successCount = results.filter(r => r.status === 'fulfilled').length;
+          const failureCount = results.length - successCount;
+
+          await this.loadData();
+          await this.renderLibrary();
+          if (failureCount === 0) {
+            window.ResearchHub.Utils.showToast(
+              `Updated status for ${successCount} paper${successCount !== 1 ? 's' : ''}`,
+              'success'
+            );
+          } else {
+            window.ResearchHub.Utils.showToast(
+              `Updated ${successCount} paper${successCount !== 1 ? 's' : ''}; ${failureCount} failed`,
+              'warning'
+            );
+          }
         });
       }
     },
