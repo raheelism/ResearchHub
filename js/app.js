@@ -439,11 +439,25 @@ window.ResearchHub = window.ResearchHub || {};
             return;
           }
 
-          await Promise.all(selectedIds.map(id => window.ResearchHub.Papers.update(id, { status: targetStatus })));
+          const results = await Promise.allSettled(
+            selectedIds.map(id => window.ResearchHub.Papers.update(id, { status: targetStatus }))
+          );
+          const successCount = results.filter(r => r.status === 'fulfilled').length;
+          const failureCount = results.length - successCount;
+
           await this.loadData();
-          this.currentPage = 1;
           await this.renderLibrary();
-          window.ResearchHub.Utils.showToast(`Updated status for ${selectedIds.length} paper${selectedIds.length !== 1 ? 's' : ''}`, 'success');
+          if (failureCount === 0) {
+            window.ResearchHub.Utils.showToast(
+              `Updated status for ${successCount} paper${successCount !== 1 ? 's' : ''}`,
+              'success'
+            );
+          } else {
+            window.ResearchHub.Utils.showToast(
+              `Updated ${successCount} paper${successCount !== 1 ? 's' : ''}; ${failureCount} failed`,
+              'warning'
+            );
+          }
         });
       }
     },
