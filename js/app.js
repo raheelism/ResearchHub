@@ -207,6 +207,8 @@ window.ResearchHub = window.ResearchHub || {};
       // Apply search
       const searchInput = document.getElementById('global-search');
       if (searchInput && searchInput.value.length >= 2) {
+        const searchMode = document.getElementById('search-mode');
+        window.ResearchHub.Search.setMode(searchMode ? searchMode.value : 'balanced');
         const results = window.ResearchHub.Search.search(searchInput.value);
         if (results !== null) papers = results;
       }
@@ -1454,6 +1456,7 @@ window.ResearchHub = window.ResearchHub || {};
     setupSearch() {
       const searchInput = document.getElementById('global-search');
       if (!searchInput) return;
+      const searchMode = document.getElementById('search-mode');
       const Utils = window.ResearchHub.Utils;
       const debouncedSearch = Utils.debounce(() => {
         this.currentPage = 1;
@@ -1464,6 +1467,12 @@ window.ResearchHub = window.ResearchHub || {};
         }
       }, 300);
       searchInput.addEventListener('input', debouncedSearch);
+      if (searchMode) {
+        searchMode.addEventListener('change', () => {
+          window.ResearchHub.Search.setMode(searchMode.value);
+          if (searchInput.value.length >= 2) debouncedSearch();
+        });
+      }
     },
 
     setupKeyboardShortcuts() {
