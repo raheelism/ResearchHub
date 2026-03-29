@@ -27,7 +27,7 @@ ResearchHub is a client-side personal paper management web app for organizing, t
 
 This project is a static web app (no build step required).
 
-1. Open `/home/runner/work/ResearchHub/ResearchHub/index.html` in a browser, or
+1. Open `./index.html` in a browser, or
 2. Serve the repository with any static file server.
 
 ## Notes
