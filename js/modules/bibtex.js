@@ -12,8 +12,8 @@ window.ResearchHub = window.ResearchHub || {};
         for (let i = 0; i < line.length; i++) {
           const c = line[i];
           if (c === '{' && !inQuote) inBrace++;
-          else if (c === '}' && !inBrace && !inQuote) { /* ignore unbalanced */ }
-          else if (c === '}' && !inQuote) inBrace--;
+          else if (c === '}' && inBrace > 0 && !inQuote) inBrace--;
+          else if (c === '}' && inBrace === 0 && !inQuote) { /* skip unbalanced closing brace */ }
           else if (c === '"' && inBrace === 0) inQuote = !inQuote;
           else if (c === '%' && inBrace === 0 && !inQuote) {
             return line.substring(0, i);

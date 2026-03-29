@@ -180,10 +180,11 @@ window.ResearchHub = window.ResearchHub || {};
         : null;
       const venue = (item['container-title'] && item['container-title'][0]) || '';
       let abstract = item.abstract || '';
-      // Strip HTML tags safely: remove all tags iteratively until none remain
-      let prev = '';
-      while (prev !== abstract) {
-        prev = abstract;
+      // Strip HTML tags safely using DOMParser
+      try {
+        const doc = (new DOMParser()).parseFromString(abstract, 'text/html');
+        abstract = doc.body.textContent || '';
+      } catch(e) {
         abstract = abstract.replace(/<[^>]*>/g, '');
       }
       abstract = abstract.trim();

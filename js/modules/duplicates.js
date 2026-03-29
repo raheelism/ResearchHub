@@ -2,6 +2,7 @@ window.ResearchHub = window.ResearchHub || {};
 
 (function() {
   const Duplicates = {
+    FUZZY_MATCH_THRESHOLD: 0.15,
     find(papers) {
       const groups = [];
       const seenPairs = new Set();
@@ -30,7 +31,7 @@ window.ResearchHub = window.ResearchHub || {};
         const titledPapers = papers.filter(p => p.title && p.title.length > 3);
         const fuse = new Fuse(titledPapers, {
           keys: ['title'],
-          threshold: 0.15,
+          threshold: Duplicates.FUZZY_MATCH_THRESHOLD,
           includeScore: true
         });
 
@@ -38,7 +39,7 @@ window.ResearchHub = window.ResearchHub || {};
           const p = titledPapers[i];
           const results = fuse.search(p.title);
           // Find very close matches (excluding self)
-          const matches = results.filter(r => r.item.id !== p.id && r.score < 0.15);
+          const matches = results.filter(r => r.item.id !== p.id && r.score < Duplicates.FUZZY_MATCH_THRESHOLD);
           for (const match of matches) {
             const pairKey = [p.id, match.item.id].sort().join('|');
             if (!seenPairs.has(pairKey)) {

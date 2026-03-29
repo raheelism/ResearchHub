@@ -5,7 +5,7 @@ window.ResearchHub = window.ResearchHub || {};
     async get(key, defaultValue) {
       const db = window.ResearchHub.db;
       const record = await db.settings.get(key);
-      return record !== undefined ? record.value : defaultValue;
+      return (record && record.value !== undefined) ? record.value : defaultValue;
     },
 
     async set(key, value) {
