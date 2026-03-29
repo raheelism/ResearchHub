@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ResearchHub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <span class="logo">📚 ResearchHub</span>
+        <button id="sidebar-toggle" class="sidebar-toggle">☰</button>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-link active" data-section="dashboard">📊 Dashboard</a>
+        <a href="#" class="nav-link" data-section="library">📚 Library</a>
+        <a href="#" class="nav-link" data-section="add-paper">➕ Add Paper</a>
+        <a href="#" class="nav-link" data-section="kanban">🗂️ Kanban</a>
+        <a href="#" class="nav-link" data-section="collections">📁 Collections</a>
+        <a href="#" class="nav-link" data-section="tags">🏷️ Tags</a>
+        <a href="#" class="nav-link" data-section="quality">✅ Quality Check</a>
+        <a href="#" class="nav-link" data-section="duplicates">🔍 Duplicates</a>
+        <a href="#" class="nav-link" data-section="extraction">🧪 Extraction</a>
+        <a href="#" class="nav-link" data-section="settings">⚙️ Settings</a>
+      </nav>
+      <div class="sidebar-collections" id="sidebar-collections">
+        <div class="sidebar-section-title">Collections</div>
+      </div>
+    </aside>
+
+    <!-- Main Wrapper -->
+    <div id="main-wrapper">
+      <!-- Top Header -->
+      <header id="top-header" class="top-header">
+        <div class="header-left">
+          <button id="mobile-menu-btn" class="mobile-menu-btn">☰</button>
+          <div class="search-wrapper">
+            <input type="text" id="global-search" class="search-input" placeholder="Search papers… (Ctrl+K)">
+            <span class="search-icon">🔍</span>
+          </div>
+        </div>
+        <div class="header-right">
+          <button id="dark-mode-toggle" class="btn-icon" title="Toggle dark mode">🌙</button>
+          <button id="add-paper-btn" class="btn btn-primary" title="Add Paper (Ctrl+N)">+ Add Paper</button>
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <main id="main-content">
+        <!-- Dashboard -->
+        <section id="section-dashboard" class="content-section active">
+          <div class="section-header">
+            <h1>Dashboard</h1>
+          </div>
+          <div id="dashboard-content"></div>
+        </section>
+
+        <!-- Library -->
+        <section id="section-library" class="content-section">
+          <div class="section-header">
+            <h1>Library</h1>
+            <div class="section-actions">
+              <span id="papers-count" class="papers-count"></span>
+              <div class="filter-group">
+                <select id="filter-status" class="filter-select">
+                  <option value="">All Statuses</option>
+                </select>
+                <select id="filter-tag" class="filter-select">
+                  <option value="">All Tags</option>
+                </select>
+                <select id="filter-collection" class="filter-select">
+                  <option value="">All Collections</option>
+                </select>
+                <select id="filter-priority" class="filter-select">
+                  <option value="">All Priorities</option>
+                  <option value="high">High</option>
+                  <option value="medium">Medium</option>
+                  <option value="low">Low</option>
+                </select>
+              </div>
+              <div class="export-group">
+                <button id="export-bibtex-btn" class="btn btn-secondary">Export BibTeX</button>
+                <button id="export-csv-btn" class="btn btn-secondary">Export CSV</button>
+              </div>
+            </div>
+          </div>
+          <div class="table-container">
+            <table id="papers-table">
+              <thead>
+                <tr>
+                  <th><input type="checkbox" id="select-all-papers"></th>
+                  <th data-sort="title" class="sortable">Title <span class="sort-icon">↕</span></th>
+                  <th data-sort="authors" class="sortable">Authors <span class="sort-icon">↕</span></th>
+                  <th data-sort="year" class="sortable">Year <span class="sort-icon">↕</span></th>
+                  <th data-sort="venue" class="sortable">Venue <span class="sort-icon">↕</span></th>
+                  <th>Status</th>
+                  <th>Tags</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="papers-tbody"></tbody>
+            </table>
+          </div>
+          <div id="pagination" class="pagination"></div>
+        </section>
+
+        <!-- Add Paper (section placeholder) -->
+        <section id="section-add-paper" class="content-section">
+          <div class="section-header"><h1>Add Paper</h1></div>
+          <div id="add-paper-content"></div>
+        </section>
+
+        <!-- Kanban -->
+        <section id="section-kanban" class="content-section">
+          <div class="section-header"><h1>Kanban Board</h1></div>
+          <div id="kanban-board" class="kanban-board"></div>
+        </section>
+
+        <!-- Collections -->
+        <section id="section-collections" class="content-section">
+          <div class="section-header">
+            <h1>Collections</h1>
+            <button id="new-collection-btn" class="btn btn-primary">+ New Collection</button>
+          </div>
+          <div id="collections-content"></div>
+        </section>
+
+        <!-- Tags -->
+        <section id="section-tags" class="content-section">
+          <div class="section-header"><h1>Tags</h1></div>
+          <div id="tags-content"></div>
+        </section>
+
+        <!-- Quality -->
+        <section id="section-quality" class="content-section">
+          <div class="section-header"><h1>Quality Check</h1></div>
+          <div id="quality-content"></div>
+        </section>
+
+        <!-- Duplicates -->
+        <section id="section-duplicates" class="content-section">
+          <div class="section-header"><h1>Duplicate Detection</h1></div>
+          <div id="duplicates-content"></div>
+        </section>
+
+        <!-- Extraction -->
+        <section id="section-extraction" class="content-section">
+          <div class="section-header"><h1>Extraction Templates</h1></div>
+          <div id="extraction-content"></div>
+        </section>
+
+        <!-- Settings -->
+        <section id="section-settings" class="content-section">
+          <div class="section-header"><h1>Settings</h1></div>
+          <div id="settings-content"></div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Paper Detail Modal -->
+  <div class="modal-overlay" id="paper-detail-modal" style="display:none">
+    <div class="modal-container modal-large">
+      <div class="modal-header">
+        <h2 id="modal-paper-title">Paper Title</h2>
+        <div class="modal-header-actions">
+          <button class="btn btn-secondary" id="modal-edit-btn">Edit</button>
+          <button class="modal-close" data-modal="paper-detail-modal">✕</button>
+        </div>
+      </div>
+      <div class="modal-body" id="paper-detail-body"></div>
+    </div>
+  </div>
+
+  <!-- Add Paper Modal -->
+  <div class="modal-overlay" id="add-paper-modal" style="display:none">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2 id="add-paper-modal-title">Add Paper</h2>
+        <button class="modal-close" data-modal="add-paper-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="manual">Manual Entry</button>
+          <button class="tab-btn" data-tab="bibtex">BibTeX</button>
+          <button class="tab-btn" data-tab="doi">DOI Lookup</button>
+          <button class="tab-btn" data-tab="upload">File Upload</button>
+          <button class="tab-btn" data-tab="ris">RIS Import</button>
+        </div>
+
+        <!-- Manual Entry Tab -->
+        <div id="tab-manual" class="tab-content active">
+          <form id="add-paper-form">
+            <div class="form-grid">
+              <div class="form-group full-width">
+                <label>Title *</label>
+                <input type="text" name="title" id="form-title" required placeholder="Paper title" class="form-input">
+              </div>
+              <div class="form-group full-width">
+                <label>Authors <small>(Last, First format; comma or "and" separated)</small></label>
+                <input type="text" name="authors" id="form-authors" placeholder="Smith, John and Doe, Jane" class="form-input">
+              </div>
+              <div class="form-group">
+                <label>Year</label>
+                <input type="number" name="year" id="form-year" min="1900" max="2100" placeholder="2024" class="form-input">
+              </div>
+              <div class="form-group">
+                <label>Venue / Journal</label>
+                <input type="text" name="venue" id="form-venue" placeholder="Journal or conference name" class="form-input">
+              </div>
+              <div class="form-group">
+                <label>DOI</label>
+                <div class="input-with-btn">
+                  <input type="text" name="doi" id="form-doi" placeholder="10.1234/example" class="form-input">
+                  <button type="button" id="doi-autofill-btn" class="btn btn-secondary btn-sm">Auto-fill</button>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Status</label>
+                <select name="status" id="form-status" class="form-select"></select>
+              </div>
+              <div class="form-group">
+                <label>Priority</label>
+                <select name="priority" id="form-priority" class="form-select">
+                  <option value="">None</option>
+                  <option value="high">High</option>
+                  <option value="medium">Medium</option>
+                  <option value="low">Low</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Keywords <small>(comma separated)</small></label>
+                <input type="text" name="keywords" id="form-keywords" placeholder="machine learning, NLP" class="form-input">
+              </div>
+              <div class="form-group full-width">
+                <label>Tags <small>(comma separated)</small></label>
+                <input type="text" name="tags" id="form-tags" placeholder="survey, important" class="form-input">
+              </div>
+              <div class="form-group full-width">
+                <label>Abstract</label>
+                <textarea name="abstract" id="form-abstract" rows="4" placeholder="Paper abstract..." class="form-textarea"></textarea>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">Add Paper</button>
+              <button type="button" class="btn btn-secondary" data-modal="add-paper-modal">Cancel</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- BibTeX Tab -->
+        <div id="tab-bibtex" class="tab-content">
+          <div class="form-group">
+            <label>Paste BibTeX</label>
+            <textarea id="bibtex-input" rows="12" class="form-textarea" placeholder="@article{key,&#10;  title = {Title},&#10;  author = {Last, First},&#10;  year = {2023}&#10;}"></textarea>
+          </div>
+          <div id="bibtex-preview" class="import-preview"></div>
+          <div class="form-actions">
+            <button id="parse-bibtex-btn" class="btn btn-secondary">Parse &amp; Preview</button>
+            <button id="import-bibtex-btn" class="btn btn-primary" style="display:none">Import All</button>
+          </div>
+        </div>
+
+        <!-- DOI Tab -->
+        <div id="tab-doi" class="tab-content">
+          <div class="form-group">
+            <label>Enter DOI</label>
+            <div class="input-with-btn">
+              <input type="text" id="doi-lookup-input" placeholder="10.1234/example or full URL" class="form-input">
+              <button id="doi-lookup-btn" class="btn btn-primary">Lookup</button>
+            </div>
+          </div>
+          <div id="doi-preview" class="import-preview"></div>
+        </div>
+
+        <!-- File Upload Tab -->
+        <div id="tab-upload" class="tab-content">
+          <div class="upload-area" id="bibtex-upload-area">
+            <div class="upload-icon">📄</div>
+            <p>Drop BibTeX file here or click to browse</p>
+            <input type="file" id="bibtex-file-input" accept=".bib,.txt" style="display:none">
+            <button type="button" class="btn btn-secondary" onclick="document.getElementById('bibtex-file-input').click()">Browse File</button>
+          </div>
+          <div id="upload-preview" class="import-preview"></div>
+        </div>
+
+        <!-- RIS Tab -->
+        <div id="tab-ris" class="tab-content">
+          <div class="form-group">
+            <label>Paste RIS Data</label>
+            <textarea id="ris-input" rows="12" class="form-textarea" placeholder="TY  - JOUR&#10;TI  - Title&#10;AU  - Last, First&#10;PY  - 2023&#10;ER  -"></textarea>
+          </div>
+          <div class="form-actions">
+            <button id="import-ris-btn" class="btn btn-primary">Import RIS</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PDF Viewer Modal -->
+  <div class="modal-overlay" id="pdf-viewer-modal" style="display:none">
+    <div class="modal-container modal-fullscreen">
+      <div class="modal-header">
+        <h2 id="pdf-modal-title">PDF Viewer</h2>
+        <div class="pdf-controls">
+          <button id="pdf-prev" class="btn btn-secondary btn-sm">◀ Prev</button>
+          <span id="pdf-page-info">Page 1 of 1</span>
+          <button id="pdf-next" class="btn btn-secondary btn-sm">Next ▶</button>
+          <button id="pdf-zoom-out" class="btn btn-secondary btn-sm">−</button>
+          <span id="pdf-zoom-level">100%</span>
+          <button id="pdf-zoom-in" class="btn btn-secondary btn-sm">+</button>
+        </div>
+        <button class="modal-close" data-modal="pdf-viewer-modal">✕</button>
+      </div>
+      <div class="modal-body pdf-modal-body">
+        <canvas id="pdf-canvas"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm Modal -->
+  <div class="modal-overlay" id="confirm-modal" style="display:none">
+    <div class="modal-container modal-small">
+      <div class="modal-header">
+        <h2 id="confirm-title">Confirm</h2>
+      </div>
+      <div class="modal-body">
+        <p id="confirm-message"></p>
+      </div>
+      <div class="modal-footer">
+        <button id="confirm-ok" class="btn btn-danger">Confirm</button>
+        <button id="confirm-cancel" class="btn btn-secondary">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CDN Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/dexie@3/dist/dexie.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/file-saver/dist/FileSaver.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+
+  <!-- App Scripts -->
+  <script src="js/db.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/modules/bibtex.js"></script>
+  <script src="js/modules/papers.js"></script>
+  <script src="js/modules/search.js"></script>
+  <script src="js/modules/status.js"></script>
+  <script src="js/modules/tags.js"></script>
+  <script src="js/modules/notes.js"></script>
+  <script src="js/modules/collections.js"></script>
+  <script src="js/modules/export.js"></script>
+  <script src="js/modules/import.js"></script>
+  <script src="js/modules/dashboard.js"></script>
+  <script src="js/modules/settings.js"></script>
+  <script src="js/modules/duplicates.js"></script>
+  <script src="js/modules/extraction.js"></script>
+  <script src="js/modules/quality.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
