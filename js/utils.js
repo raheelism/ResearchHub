@@ -128,24 +128,32 @@ window.ResearchHub = window.ResearchHub || {};
 
     sanitizeHTML(str) {
       if (!str) return '';
-      // Iteratively apply all replacements until the string stabilizes
-      // (prevents bypass via nested/split patterns like <scr<script>ipt>)
-      let prev;
-      let result = str;
-      do {
-        prev = result;
-        // Remove script elements (open + close, with any whitespace/attrs inside)
-        result = result.replace(/<\s*script(?:\s[^>]*)?>[\s\S]*?<\s*\/\s*script(?:\s[^>]*)?>/gi, '');
-        // Remove orphan opening script tags
-        result = result.replace(/<\s*script(?:\s[^>]*)?>/gi, '');
-        // Remove orphan closing script tags
-        result = result.replace(/<\s*\/\s*script(?:\s[^>]*)?>/gi, '');
-        // Remove event handler attributes
-        result = result.replace(/\son[a-z]+\s*=\s*(?:"[^"]*"|'[^']*'|\S*)/gi, '');
-        // Remove javascript: URIs
-        result = result.replace(/javascript\s*:/gi, '');
-      } while (result !== prev);
-      return result;
+      // Use DOM-based sanitization (browser only) for correctness
+      if (typeof document !== 'undefined') {
+        const template = document.createElement('template');
+        template.innerHTML = str;
+        const root = template.content;
+        // Remove all script elements
+        root.querySelectorAll('script').forEach(el => el.remove());
+        // Remove dangerous attributes from all elements
+        root.querySelectorAll('*').forEach(el => {
+          const attrsToRemove = [];
+          for (let i = 0; i < el.attributes.length; i++) {
+            const attr = el.attributes[i];
+            if (attr.name.toLowerCase().startsWith('on') ||
+                attr.value.toLowerCase().includes('javascript:')) {
+              attrsToRemove.push(attr.name);
+            }
+          }
+          attrsToRemove.forEach(name => el.removeAttribute(name));
+        });
+        // Serialize back
+        const div = document.createElement('div');
+        div.appendChild(root.cloneNode(true));
+        return div.innerHTML;
+      }
+      // Fallback (non-browser): plain text only
+      return str.replace(/</g, '&lt;').replace(/>/g, '&gt;');
     },
 
     truncate(str, len) {
