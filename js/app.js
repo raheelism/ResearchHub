@@ -137,11 +137,7 @@ window.ResearchHub = window.ResearchHub || {};
         link.addEventListener('click', (e) => {
           e.preventDefault();
           const section = link.dataset.section;
-          if (section === 'add-paper') {
-            this.showAddPaperModal();
-          } else {
-            this.showSection(section);
-          }
+          this.showSection(section);
         });
       });
 
@@ -187,6 +183,7 @@ window.ResearchHub = window.ResearchHub || {};
       switch(name) {
         case 'dashboard': await this.renderDashboard(); break;
         case 'library': await this.renderLibrary(); break;
+        case 'add-paper': await this.renderAddPaper(); break;
         case 'kanban': await this.renderKanban(); break;
         case 'collections': await this.renderCollections(); break;
         case 'tags': await this.renderTags(); break;
@@ -229,6 +226,27 @@ window.ResearchHub = window.ResearchHub || {};
       this.renderPagination(papers.length);
       this.setupFilters();
       this.setupTableSort();
+    },
+
+    async renderAddPaper() {
+      const container = document.getElementById('add-paper-content');
+      if (!container) return;
+      container.innerHTML = `
+        <div class="card">
+          <h3>Choose how to add papers</h3>
+          <p class="text-muted">Use manual entry, BibTeX, DOI lookup, file upload, or RIS import.</p>
+          <div class="section-actions">
+            <button class="btn btn-primary open-add-paper-btn" data-tab="manual">Manual Entry</button>
+            <button class="btn btn-secondary open-add-paper-btn" data-tab="bibtex">BibTeX</button>
+            <button class="btn btn-secondary open-add-paper-btn" data-tab="doi">DOI Lookup</button>
+            <button class="btn btn-secondary open-add-paper-btn" data-tab="upload">File Upload</button>
+            <button class="btn btn-secondary open-add-paper-btn" data-tab="ris">RIS Import</button>
+          </div>
+        </div>
+      `;
+      container.querySelectorAll('.open-add-paper-btn').forEach(btn => {
+        btn.addEventListener('click', () => this.showAddPaperModal(null, btn.dataset.tab || 'manual'));
+      });
     },
 
     async renderPapersTable(papers) {
@@ -922,7 +940,7 @@ window.ResearchHub = window.ResearchHub || {};
       if (pageInfo) pageInfo.textContent = `Page ${this._pdfState.page} of ${pdf.numPages}`;
     },
 
-    showAddPaperModal(prefillData) {
+    showAddPaperModal(prefillData, initialTab = 'manual') {
       const modal = document.getElementById('add-paper-modal');
       if (!modal) return;
 
@@ -956,6 +974,16 @@ window.ResearchHub = window.ResearchHub || {};
 
       this.openModal('add-paper-modal');
       this.setupAddPaperForm();
+      this.activateAddPaperTab(initialTab);
+    },
+
+    activateAddPaperTab(tabName) {
+      const tabBtns = document.querySelectorAll('#add-paper-modal .tab-btn');
+      const tabContents = document.querySelectorAll('#add-paper-modal .tab-content');
+      tabBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tabName));
+      tabContents.forEach(tc => tc.classList.remove('active'));
+      const target = document.getElementById(`tab-${tabName}`);
+      if (target) target.classList.add('active');
     },
 
     setupAddPaperForm() {
